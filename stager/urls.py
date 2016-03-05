@@ -4,5 +4,5 @@ from . import views
 
 urlpatterns = [
         url(r'^$', views.index, name='index'),
-        url(r'^/webhooks$', views.add_repository, name='add_repository'),
+        url(r'^webhooks$', views.add_repository, name='add_repository'),
 ]
