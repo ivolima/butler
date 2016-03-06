@@ -7,7 +7,7 @@ from models import *
 import ipdb, json
 
 def dashboard(request):
-    return HttpResponse("Pagina inicial!")
+    return render(request, 'stager/dashboard.html', {})
 
 @require_POST
 def add_repository(request):
