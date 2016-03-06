@@ -24,11 +24,11 @@ class Profile(models.Model):
 class Project(models.Model):
     cod_uuid = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False, verbose_name=(u'UUID'))
     repository_url = models.URLField()
-    profile_id = models.ForeignKey(Profile)
+    profile = models.ForeignKey(Profile)
 
 
 class Webhook(models.Model):
-    pull_request = models.CharField()
-    repository = models.CharField()
-    actor = models.CharField()
-    project_id = models.ForeignKey(Project)
+    pull_request = models.TextField()
+    repository = models.TextField()
+    actor = models.TextField()
+    project = models.ForeignKey(Project)
