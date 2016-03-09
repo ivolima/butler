@@ -110,9 +110,13 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
                         )
 
-SOCIAL_AUTH_BITBUCKET_KEY = '<place-your-auth-key-here>'
-SOCIAL_AUTH_BITBUCKET_SECRET = '<place-your-auth-secret-here>'
+SOCIAL_AUTH_BITBUCKET_KEY = '<place-consumer-key-here>'
+SOCIAL_AUTH_BITBUCKET_SECRET = '<place-consumer-secret-here>'
+BITBUCKET_REPOSITORIES_URL = 'https://api.bitbucket.org/2.0/repositories/{username}'
+BITBUCKET_CREATE_WEBHOOK = 'https://api.bitbucket.org/2.0/repositories/{owner}/{repo_slug}/hooks'
+BITBUCKET_USER_AGENT = 'Bitbucket-Webhooks/2.0'
 
+GITHUB_USER_AGENT = 'TO BE IMPLEMENTED'
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 

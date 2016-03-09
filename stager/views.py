@@ -3,16 +3,23 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.http import require_http_methods, require_POST
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 from models import *
 
-import ipdb, json
+from requests_oauthlib import OAuth1
+
+import ipdb
+import json
+import requests
 
 def login(request):
     return render(request, 'stager/login.html', {})
 
 @login_required
 def dashboard(request):
-    return render(request, 'stager/dashboard.html', {})
+    projects = fetch_repositories(request.user)
+    context = {'projects':projects}
+    return render(request, 'stager/dashboard.html', context)
 
 @require_POST
 def add_repository(request):
@@ -23,16 +30,13 @@ def add_repository(request):
 @csrf_exempt
 @require_POST
 def webhooks(request, user_id, project_id):
-    BITBUCKET_USER_AGENT = 'Bitbucket-Webhooks/2.0'
-    GITHUB_USER_AGENT = 'TO BE IMPLEMENTED'
-
-    #ipdb.set_trace()
+    """Parses webhooks requests and persists info into db"""
     body = json.loads(request.body)
 
-    if request.META.get("HTTP_USER_AGENT", "") == BITBUCKET_USER_AGENT:
+    if request.META.get("HTTP_USER_AGENT", "") == settings.BITBUCKET_USER_AGENT:
         print "Webhook received from Bitbucket"
         return parse_bitbucket_webhook(body, project_id)
-    elif request.META.get("HTTP_USER_AGENT", "") == GITHUB_USER_AGENT:
+    elif request.META.get("HTTP_USER_AGENT", "") == settings.GITHUB_USER_AGENT:
         print "Webhook received from Github. It needs to be implemented"
         return parse_github_webhook(body)
     else:
@@ -61,10 +65,19 @@ def parse_bitbucket_webhook(json_content, project_id):
         webhook.project = project
         webhook.save()
 
-        # We need to decide what exactly should be persisted. By now, I'm considering to persist these 3 dictionaries as plain text
+        # TODO: We need to decide what exactly should be persisted. By now, I'm considering to persist these 3 dictionaries as plain text
         return HttpResponse("CHEGOU EM PAZ")
     return HttpResponseForbidden("We only support pull request webhooks. Please verify yours",content_type="text/plain")
 
+def fetch_repositories(user, role="owner", persist=False):
+    """Given an object User, it gets all repositories owned by this user"""
+
+    extra_data = json.loads(user.social_auth.values()[0]['extra_data'])
+    oauth = OAuth1(settings.SOCIAL_AUTH_BITBUCKET_KEY, settings.SOCIAL_AUTH_BITBUCKET_SECRET, extra_data['access_token']['oauth_token'], extra_data['access_token']['oauth_token_secret'])
+    response = requests.get(settings.BITBUCKET_REPOSITORIES_URL.format(username=user.username), auth=oauth)
+
+    ipdb.set_trace()
+    return json.dumps(json.loads(response.text))
 
 def parse_github_webhook(json_content):
     return HttpResponseForbidden("It needs to be implemented",content_type="text/plain")
