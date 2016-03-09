@@ -23,8 +23,12 @@ class Profile(models.Model):
 
 class Project(models.Model):
     cod_uuid = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False, verbose_name=(u'UUID'))
-    repository_url = models.URLField()
+    repository_url = models.URLField(default="")
     profile = models.ForeignKey(Profile)
+    is_private = models.BooleanField(default=None)
+    scm = models.CharField(max_length=10)
+    language = models.CharField(max_length=40, default="")
+    raw_json = models.TextField(default="")
 
 
 class Webhook(models.Model):
