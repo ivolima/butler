@@ -73,11 +73,33 @@ def fetch_repositories(user, role="owner", persist=False):
     """Given an object User, it gets all repositories owned by this user"""
 
     extra_data = json.loads(user.social_auth.values()[0]['extra_data'])
-    oauth = OAuth1(settings.SOCIAL_AUTH_BITBUCKET_KEY, settings.SOCIAL_AUTH_BITBUCKET_SECRET, extra_data['access_token']['oauth_token'], extra_data['access_token']['oauth_token_secret'])
+    oauth = OAuth1(
+                    settings.SOCIAL_AUTH_BITBUCKET_KEY,
+                    settings.SOCIAL_AUTH_BITBUCKET_SECRET,
+                    extra_data['access_token']['oauth_token'],
+                    extra_data['access_token']['oauth_token_secret']
+                    )
     response = requests.get(settings.BITBUCKET_REPOSITORIES_URL.format(username=user.username), auth=oauth)
 
-    ipdb.set_trace()
-    return json.dumps(json.loads(response.text))
+    #ipdb.set_trace()
+    data = json.loads(response.text)
+    projects = data.get("values")
+    result = []
+    for proj in projects:
+        d = {
+                "name": proj["name"],
+                "scm": proj["scm"],
+                "is_private": proj["is_private"],
+                "language": proj["language"],
+                "repository_url": proj["links"]["html"]["href"]
+            }
+        result.append(d)
+        # TODO: verify if project already exists and update it
+        obj = Project(**d)
+        obj.owner = user
+        obj.raw = json.dumps(proj)
+        obj.save()
+    return result
 
 def parse_github_webhook(json_content):
     return HttpResponseForbidden("It needs to be implemented",content_type="text/plain")
