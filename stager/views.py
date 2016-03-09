@@ -2,10 +2,15 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.http import require_http_methods, require_POST
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.contrib.auth.decorators import login_required
 from models import *
 
 import ipdb, json
 
+def login(request):
+    return render(request, 'stager/login.html', {})
+
+@login_required
 def dashboard(request):
     return render(request, 'stager/dashboard.html', {})
 
