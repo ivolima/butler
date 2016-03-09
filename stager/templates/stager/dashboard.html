@@ -40,7 +40,28 @@
                 <hr />
                 
                 {% if projects %}
-                    <p>A TABLE LISTING PROJECT INFORMATION HERE</p>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Language</th>
+                                <th>SCM</th>
+                                <th>Private</th>
+                                <th>Create Webhook</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for project in projects %}
+                                <tr>
+                                    <td><a href={{ project.repository_url }} target="_blank">{{ project.name }}</a></td>
+                                    <td>{{ project.language }}</td>
+                                    <td>{{ project.scm }}</td>
+                                    <td>{{ project.is_private }}</td>
+                                    <td><button>Create</button></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 {% endif %}
 
             </div>
