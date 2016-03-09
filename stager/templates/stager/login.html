@@ -1,0 +1,9 @@
+{% extends 'stager/base.html' %}
+
+{% load staticfiles %}
+
+{% block content %}
+<a href="{% if request.GET.next %}?next={{request.GET.next}}{% endif %}">
+    <img src="{% static "stager/img/login-bitbucket.png" %}" alt="Bitbucket">
+</a>
+{% endblock %}
