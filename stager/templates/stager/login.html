@@ -3,7 +3,11 @@
 {% load staticfiles %}
 
 {% block content %}
-<a href="{% if request.GET.next %}?next={{request.GET.next}}{% endif %}">
-    <img src="{% static "stager/img/login-bitbucket.png" %}" alt="Bitbucket">
-</a>
+<div class="container">
+    <div class="jumbotron">
+      <h1>Hello, baitinga!</h1>
+        <p>Start using Butler for staging servers! </p>
+        <p><a class="btn btn-primary btn-lg" href="{% url 'social:begin' 'bitbucket' %}{% if request.GET.next %}?next={{request.GET.next}}{% endif %}" role="button">Login with Bitbucket</a></p>
+    </div>
+</div>
 {% endblock %}
