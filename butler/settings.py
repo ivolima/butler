@@ -110,8 +110,8 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
                         )
 
-SOCIAL_AUTH_BITBUCKET_KEY = '<place-consumer-key-here>'
-SOCIAL_AUTH_BITBUCKET_SECRET = '<place-consumer-secret-here>'
+SOCIAL_AUTH_BITBUCKET_KEY = 'EK9E6rMeNsGDkwK2ub'
+SOCIAL_AUTH_BITBUCKET_SECRET = 'qgzG4REqVprQwF5PKAXxFLSzXzMg626x'
 BITBUCKET_REPOSITORIES_URL = 'https://api.bitbucket.org/2.0/repositories/{username}'
 BITBUCKET_CREATE_WEBHOOK = 'https://api.bitbucket.org/2.0/repositories/{owner}/{repo_slug}/hooks'
 BITBUCKET_USER_AGENT = 'Bitbucket-Webhooks/2.0'
