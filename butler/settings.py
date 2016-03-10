@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'stager',
+    'social.apps.django_app.default',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -64,6 +65,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social.apps.django_app.context_processors.backends',
+                'social.apps.django_app.context_processors.login_redirect',
             ],
         },
     },
@@ -101,7 +104,19 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Authentication backends
+AUTHENTICATION_BACKENDS = (
+    'social.backends.bitbucket.BitbucketOAuth',
+    'django.contrib.auth.backends.ModelBackend',
+                        )
 
+SOCIAL_AUTH_BITBUCKET_KEY = 'EK9E6rMeNsGDkwK2ub'
+SOCIAL_AUTH_BITBUCKET_SECRET = 'qgzG4REqVprQwF5PKAXxFLSzXzMg626x'
+BITBUCKET_REPOSITORIES_URL = 'https://api.bitbucket.org/2.0/repositories/{username}'
+BITBUCKET_CREATE_WEBHOOK = 'https://api.bitbucket.org/2.0/repositories/{owner}/{repo_slug}/hooks'
+BITBUCKET_USER_AGENT = 'Bitbucket-Webhooks/2.0'
+
+GITHUB_USER_AGENT = 'TO BE IMPLEMENTED'
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 

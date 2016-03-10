@@ -1,47 +1,74 @@
 {% extends 'stager/base.html' %}
 
-{% block sidebar %}
-    {% include 'stager/sidebar.html' %}
+{% block navigation %}
+    {% include 'stager/navigation.html' %}
 {% endblock %}
 
 {% block content %}
-<!-- Page Heading -->
-<div class="row">
-    <div class="col-lg-12">
-        <h1 class="page-header">
-            Welcome, 
-            <small>{{ request.user.username }}</small>
-        </h1>
-        <ol class="breadcrumb">
-            <li>
-                <i class="fa fa-dashboard"></i>  <a href="index.html">Dashboard</a>
-            </li>
-            <li class="active">
-                <i class="fa fa-file"></i> Blank Page
-            </li>
-        </ol>
-        <hr />
-        {% if webhooks %}
-            <h3> Currently, we're monitoring {{ webhooks|length }} webhooks </h3>
-            {% for hook in webhooks %}
-                <p>{{ hook }}</p>
-                {% endfor %}
-        {% else %}
-            <h3> Let's get started monitoring your projects! </h3>
-            {% if projects %}
-                <small>Click in one of the projects listed below to create a new webhhok for it</small>
-            {% else %}
-                <small>You need to be owner or admin of a project to be able to create a webhook for it.<small>
-            {% endif %}
-        {% endif %}
-        
-        <hr />
-        
-        {% if projects %}
-            <p>A TABLE LISTING PROJECT INFORMATION HERE</p>
-        {% endif %}
+<div id="page-wrapper">
+    <div class="container-fluid">
+        <!-- Page Heading -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">
+                    Welcome, 
+                    <small>{{ request.user.username }}</small>
+                </h1>
+                <ol class="breadcrumb">
+                    <li>
+                        <i class="fa fa-dashboard"></i>  <a href="index.html">Dashboard</a>
+                    </li>
+                    <li class="active">
+                        <i class="fa fa-file"></i> Blank Page
+                    </li>
+                </ol>
+                <hr />
+                {% if webhooks %}
+                    <h3> Currently, we're monitoring {{ webhooks|length }} webhooks </h3>
+                    {% for hook in webhooks %}
+                        <p>{{ hook }}</p>
+                        {% endfor %}
+                {% else %}
+                    <h3> Let's get started monitoring your projects! </h3>
+                    {% if projects %}
+                        <small>Click in one of the projects listed below to create a new webhhok for it</small>
+                    {% else %}
+                        <small>You need to be owner or admin of a project to be able to create a webhook for it.<small>
+                    {% endif %}
+                {% endif %}
+                
+                <hr />
+                
+                {% if projects %}
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Language</th>
+                                <th>SCM</th>
+                                <th>Private</th>
+                                <th>Create Webhook</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for project in projects %}
+                                <tr>
+                                    <td><a href={{ project.repository_url }} target="_blank">{{ project.name }}</a></td>
+                                    <td>{{ project.language }}</td>
+                                    <td>{{ project.scm }}</td>
+                                    <td>{{ project.is_private }}</td>
+                                    <td><button>Create</button></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
 
+            </div>
+        </div>
+        <!-- /.row -->
     </div>
+    <!-- /.container-fluid -->
 </div>
-<!-- /.row -->
+<!-- /#page-wrapper -->
 {% endblock %}

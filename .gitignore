@@ -70,3 +70,6 @@ target/
 
 # dotenv
 .env
+
+# sqlite files
+*.sqlite3
