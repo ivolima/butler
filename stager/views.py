@@ -17,7 +17,10 @@ def login(request):
 
 @login_required
 def dashboard(request):
-    projects = fetch_repositories(request.user)
+    #ipdb.set_trace()
+    projects = Project.objects.filter(owner=request.user)
+    if projects is None:
+        projects = fetch_repositories(request.user)
     context = {'projects':projects}
     return render(request, 'stager/dashboard.html', context)
 
