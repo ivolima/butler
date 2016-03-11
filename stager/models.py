@@ -5,24 +5,11 @@ from django.contrib.auth.models import User
 import uuid
 
 
-#class Profile(models.Model):
-    # Unique identifier field
-#    cod_uuid = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False, verbose_name=(u'UUID'))
-#    user = models.OneToOneField(User, unique=True, verbose_name=('user'), related_name='my_profile')
-
-#    class Meta:
-#        verbose_name = (u'Profile')
-#        verbose_name_plural = (u'Profiles')
-        #ordering = ('user_last_name',)
-
-#    def __unicode_(self):
-#        return unicode(self.user.username)
-
-#    def __str__(self):
-#        return str(self.user.username)
+def generate_uuid4():
+    return str(uuid.uuid4().hex)
 
 class Project(models.Model):
-    cod_uuid = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False, verbose_name=(u'UUID'))
+    cod_uuid = models.CharField(max_length=40, primary_key=False, default=generate_uuid4, editable=False)
     repository_url = models.URLField(default="")
     name = models.CharField(max_length=40, default="")
     owner = models.ForeignKey(User)
@@ -31,9 +18,17 @@ class Project(models.Model):
     language = models.CharField(max_length=40, default="")
     raw_json = models.TextField(default="")
 
-
 class Webhook(models.Model):
+    url = models.URLField(default="")
+    project = models.ForeignKey(Project)
+    owner = models.ForeignKey(User)
+    description = models.CharField(max_length=40, default="Butler Alert")
+    scope = models.CharField(max_length=100, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class WebhookRequest(models.Model):
     pull_request = models.TextField()
     repository = models.TextField()
     actor = models.TextField()
     project = models.ForeignKey(Project)
+
