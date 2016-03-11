@@ -137,3 +137,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 LOGIN_URL = '/stager/login/'
+
+BUTLER_DEV_URL = 'http://c1a40611.ngrok.io/'

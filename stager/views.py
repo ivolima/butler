@@ -1,10 +1,13 @@
+#coding: utf-8
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.views.decorators.http import require_http_methods, require_POST
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.utils.text import slugify
 from models import *
+from django.core.urlresolvers import reverse
 
 from requests_oauthlib import OAuth1
 
@@ -19,9 +22,10 @@ def login(request):
 def dashboard(request):
     #ipdb.set_trace()
     projects = Project.objects.filter(owner=request.user)
-    if projects is None:
+    webhooks = Webhook.objects.filter(owner=request.user)
+    if not projects:
         projects = fetch_repositories(request.user)
-    context = {'projects':projects}
+    context = {'projects':projects, 'webhooks': webhooks}
     return render(request, 'stager/dashboard.html', context)
 
 @require_POST
@@ -29,6 +33,47 @@ def add_repository(request):
     ipdb.set_trace()
     print request
     return HttpResponse("To be implemented")
+
+@login_required
+def create_webhook(request, project_uuid):
+    """Given an object User and a project UUID, it creates a webhook for this project via API"""
+    ipdb.set_trace()
+    user = request.user
+    project = Project.objects.get(cod_uuid=project_uuid)
+    extra_data = json.loads(user.social_auth.values()[0]['extra_data'])
+    webhook_url = settings.BUTLER_DEV_URL + project_uuid + "/"
+    oauth = OAuth1(
+                    settings.SOCIAL_AUTH_BITBUCKET_KEY,
+                    settings.SOCIAL_AUTH_BITBUCKET_SECRET,
+                    extra_data['access_token']['oauth_token'],
+                    extra_data['access_token']['oauth_token_secret']
+                )
+    payload = {
+                "description": "Butler Alert",
+                "url": webhook_url,
+                "active": True,
+                "events": ["pullrequest:created", "pullrequest:updated", "pullrequest:fulfilled"]
+            }
+
+    project_slug = slugify(project.name)
+    response = requests.post(settings.BITBUCKET_CREATE_WEBHOOK.format(owner=user.username, repo_slug=project_slug), auth=oauth, data=json.dumps(payload))
+    ipdb.set_trace()
+    if response.ok:
+        data = json.loads(response.text)
+        # persist webhook
+        hook = Webhook()
+        hook.url = data.get("url", webhook_url)
+        hook.project = project
+        hook.owner = user
+        hook.description = data.get("description", "")
+        hook.scope = str(data.get("events", ""))
+        hook.save()
+        # TODO: add a success message and redirect to stager/dashboard
+        return HttpResponseRedirect(reverse('dashboard'))
+
+    # TODO: add an error message here
+    context = {}
+    return render(request, 'stager/dashboard.html', context)
 
 @csrf_exempt
 @require_POST
