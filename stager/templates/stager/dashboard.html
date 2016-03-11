@@ -26,7 +26,7 @@
                 {% if webhooks %}
                     <h3> Currently, we're monitoring {{ webhooks|length }} webhooks </h3>
                     {% for hook in webhooks %}
-                        <p>{{ hook }}</p>
+                        <p>{{ hook.url }}</p>
                         {% endfor %}
                 {% else %}
                     <h3> Let's get started monitoring your projects! </h3>
@@ -57,7 +57,7 @@
                                     <td>{{ project.language }}</td>
                                     <td>{{ project.scm }}</td>
                                     <td>{{ project.is_private }}</td>
-                                    <td><button>Create</button></td>
+                                    <td><a role="button" class="btn btn-info" href="{% url 'stager:create_webhook' project.cod_uuid %}">Create</a></td>
                                 </tr>
                             {% endfor %}
                         </tbody>
