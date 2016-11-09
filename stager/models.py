@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-
+from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
 import uuid
@@ -24,7 +24,7 @@ class Webhook(models.Model):
     owner = models.ForeignKey(User)
     description = models.CharField(max_length=40, default="Butler Alert")
     scope = models.CharField(max_length=100, default="")
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=datetime.now, blank=True)
 
 class WebhookRequest(models.Model):
     pull_request = models.TextField()
