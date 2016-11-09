@@ -17,16 +17,14 @@ def login(request):
 
 @login_required
 def dashboard(request):
-    #ipdb.set_trace()
     projects = Project.objects.filter(owner=request.user)
-    if projects is None:
+    if not projects:
         projects = fetch_repositories(request.user)
     context = {'projects':projects}
     return render(request, 'stager/dashboard.html', context)
 
 @require_POST
 def add_repository(request):
-    ipdb.set_trace()
     print request
     return HttpResponse("To be implemented")
 
@@ -47,7 +45,6 @@ def webhooks(request, user_id, project_id):
         return HttpResponseForbidden("Couldn't recognize this service",content_type="text/plain")
 
 def parse_bitbucket_webhook(json_content, project_id):
-    #ipdb.set_trace()
     project = Project.objects.get(cod_uuid=project_id)
     pullrequest = json_content.get('pullrequest', False)
     repository = json_content.get('repository', {})
@@ -75,7 +72,7 @@ def parse_bitbucket_webhook(json_content, project_id):
 def fetch_repositories(user, role="owner", persist=False):
     """Given an object User, it gets all repositories owned by this user"""
 
-    extra_data = json.loads(user.social_auth.values()[0]['extra_data'])
+    extra_data = user.social_auth.values()[0]['extra_data']
     oauth = OAuth1(
                     settings.SOCIAL_AUTH_BITBUCKET_KEY,
                     settings.SOCIAL_AUTH_BITBUCKET_SECRET,
@@ -84,7 +81,6 @@ def fetch_repositories(user, role="owner", persist=False):
                     )
     response = requests.get(settings.BITBUCKET_REPOSITORIES_URL.format(username=user.username), auth=oauth)
 
-    #ipdb.set_trace()
     data = json.loads(response.text)
     projects = data.get("values")
     result = []
